@@ -1106,9 +1106,9 @@ class PushBox(State):
         #     MoveBaseGo(1.05).execute(None)
         # else:
         if not toRight:
-            MoveBaseGo(PHASE4_PUSH_Y + 0.55).execute(None)
+            MoveBaseGo(PHASE4_PUSH_Y + 0.35).execute(None)
         else:
-            MoveBaseGo(PHASE4_PUSH_Y + 0.25).execute(None)
+            MoveBaseGo(PHASE4_PUSH_Y + 0.35).execute(None)
         # MoveBaseGo(PHASE4_PUSH_Y + 0.25).execute(None)
 
         # turn based on toRight
@@ -1243,7 +1243,7 @@ if __name__ == "__main__":
                 "success": "MoveForward", "failure": "failure", "exit": "exit"})
             StateMachine.add("MoveForward", FollowLine("2.2"), transitions={
                 "see_red": "MoveStraightToPoint", "failure": "failure", "exit": "exit", "see_nothing": "failure", "see_long_red": "failure","all_done":"success"})
-            StateMachine.add("MoveStraightToPoint", Translate(0.35, 0.2), transitions={
+            StateMachine.add("MoveStraightToPoint", Translate(0.25, 0.2), transitions={
                 "success": "Turn22","failure": "failure", "exit": "exit"})
             StateMachine.add("Turn22", Turn(90), transitions={
                 "success": "success", "failure": "failure", "exit": "exit"})  # turn left 90
