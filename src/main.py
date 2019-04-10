@@ -1080,7 +1080,10 @@ class Signal4(State):
                 self.led1_pub.publish(0)
             if self.led2:
                 self.led2_pub.publish(0)
-        
+
+        global ALL_DONE
+        if ALL_DONE:
+            reset()
         return "done"
 
 class CheckCompletion(State):
