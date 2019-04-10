@@ -1048,7 +1048,7 @@ class ParkNext(State):
         POSE[2] =angles_lib.normalize_angle( angles[2] )
 
 class Signal4(State):
-    def __init__(self, led1, led1color, led2=False, led2color=None, playsound=True):
+    def __init__(self, led1, led1color, led2=False, led2color=None, playsound=True, all_done=False):
         State.__init__(self, outcomes=["done"])
         self.led1 = led1
         self.led1color = led1color
@@ -1063,7 +1063,7 @@ class Signal4(State):
         self.sound_pub = rospy.Publisher(
             '/mobile_base/commands/sound', Sound, queue_size=1)
 
-        
+        self.all_done = all_done
 
     def execute(self, userdata):
 
@@ -1074,6 +1074,8 @@ class Signal4(State):
         if self.led2:
             self.led2_pub.publish(self.led2color)
 
+        if self.all_done:
+            reset()
         if  self.led1 or self.led2:
             rospy.sleep(rospy.Duration(1.5))
             if self.led1:
@@ -1081,9 +1083,6 @@ class Signal4(State):
             if self.led2:
                 self.led2_pub.publish(0)
 
-        global ALL_DONE
-        if ALL_DONE:
-            reset()
         return "done"
 
 class CheckCompletion(State):
