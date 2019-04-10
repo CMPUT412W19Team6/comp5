@@ -26,6 +26,7 @@ from copy import deepcopy
 import tf
 
 START = False    
+ALL_DONE = False
 FORWARD_CURRENT = 0
 TURN_CURRENT = 0
 POSE = [0, 0, 0]
@@ -60,6 +61,47 @@ PHASE4_DELTA_X = 0
 PHASE4_PUSH_Y = 0
 PHASE4_START_ADJUST= False
 PHASE4_FINISHED_ADJUST = False
+
+def reset():
+    global FORWARD_CURRENT, TURN_CURRENT, ALL_DONE, POSE, turn_direction, PHASE, SHAPE, SHAPE_MATCHED, NUM_SHAPES, CURRENT_CHECKPOINT, UNKNOWN_CHECKPOINT, PHASE4_TASK_COMPLETED, BRIDGE, IMAGE, TB_POSE, GREEN_FOUND, PHASE4_SHAPE_FOUND, BOX_ID, PHASE3_LINE_FOUND, PHASE4_BOX_FOUND, PHASE4_GOAL_FOUND, PHASE4_BOX_CHECKPOINT, PHASE4_GOAL_CHECKPOINT, PHASE4_BOX_X, PHASE4_GOAL_X, PHASE4_FACING, PHASE4_EXIT_GOAL, PHASE4_DELTA_X, PHASE4_PUSH_Y, PHASE4_START_ADJUST, PHASE4_FINISHED_ADJUST
+
+    FORWARD_CURRENT = 0
+    TURN_CURRENT = 0
+    POSE = [0, 0, 0]
+    turn_direction = 1
+    PHASE = None
+    SHAPE = "triangle"
+    SHAPE_MATCHED = False
+    NUM_SHAPES = 0
+    CURRENT_CHECKPOINT = 0
+    UNKNOWN_CHECKPOINT = 0
+    PHASE4_TASK_COMPLETED = 0
+
+    BRIDGE = cv_bridge.CvBridge()
+    IMAGE = None
+
+    TB_POSE = None
+
+    GREEN_FOUND = False
+
+    PHASE4_SHAPE_FOUND = False
+    BOX_ID = 1
+    PHASE3_LINE_FOUND = False
+    PHASE4_BOX_FOUND = False
+    PHASE4_GOAL_FOUND = False
+    PHASE4_BOX_CHECKPOINT = ""
+    PHASE4_GOAL_CHECKPOINT = ""
+    PHASE4_BOX_X = 0
+    PHASE4_GOAL_X = 0
+    PHASE4_FACING = "" # either box or goal
+    PHASE4_EXIT_GOAL = None
+    PHASE4_DELTA_X = 0
+    PHASE4_PUSH_Y = 0
+    PHASE4_START_ADJUST= False
+    PHASE4_FINISHED_ADJUST = False
+    ALL_DONE = False
+
+
 class WaitForButton(State):
     def __init__(self):
         State.__init__(self, outcomes=["pressed", "exit"])
@@ -222,6 +264,8 @@ class FollowLine(State):
                             if self.red_object_count == 1:
                                 self.temporary_stop = True
                             elif self.red_object_count > 4:
+                                global ALL_DONE
+                                ALL_DONE = True
                                 return "all_done"
                             elif self.red_object_count >= 2:
                                 self.start_timeout = True
@@ -1036,7 +1080,7 @@ class Signal4(State):
                 self.led1_pub.publish(0)
             if self.led2:
                 self.led2_pub.publish(0)
-
+        
         return "done"
 
 class CheckCompletion(State):
@@ -1206,7 +1250,7 @@ if __name__ == "__main__":
                          
 
         StateMachine.add("Ending", Signal4(True,1, True,1),
-                         transitions={"done": "Phase1"})
+                         transitions={"done": "success"})
 
         # # Phase 1 sub state
         phase1_sm = StateMachine(outcomes=['success', 'failure', 'exit'])
