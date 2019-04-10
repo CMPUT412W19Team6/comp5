@@ -253,7 +253,7 @@ class FollowLine(State):
                 start_time = rospy.Time.now()
 
             r_timeout = red_timeout
-            if self.phase=="2.2":
+            if self.phase=="2.2" or self.phase=="2.1":
                 r_timeout = rospy.Duration(0)
             if self.start_timeout and start_time + r_timeout < rospy.Time.now():
                 start_time = None
@@ -1098,11 +1098,11 @@ class PushBox(State):
         # if not toRight:
         #     MoveBaseGo(1.05).execute(None)
         # else:
-        # if not toRight:
-        #     MoveBaseGo(PHASE4_PUSH_Y + 0.3).execute(None)
-        # else:
-        #     MoveBaseGo(PHASE4_PUSH_Y + 0.4).execute(None)
-        MoveBaseGo(PHASE4_PUSH_Y + 0.25).execute(None)
+        if not toRight:
+            MoveBaseGo(PHASE4_PUSH_Y + 0.3).execute(None)
+        else:
+            MoveBaseGo(PHASE4_PUSH_Y + 0.25).execute(None)
+        # MoveBaseGo(PHASE4_PUSH_Y + 0.25).execute(None)
 
         # turn based on toRight
         if toRight:
@@ -1236,7 +1236,7 @@ if __name__ == "__main__":
                 "success": "MoveForward", "failure": "failure", "exit": "exit"})
             StateMachine.add("MoveForward", FollowLine("2.2"), transitions={
                 "see_red": "MoveStraightToPoint", "failure": "failure", "exit": "exit", "see_nothing": "failure", "see_long_red": "failure","all_done":"success"})
-            StateMachine.add("MoveStraightToPoint", Translate(0.50, 0.2), transitions={
+            StateMachine.add("MoveStraightToPoint", Translate(0.35, 0.2), transitions={
                 "success": "Turn22","failure": "failure", "exit": "exit"})
             StateMachine.add("Turn22", Turn(90), transitions={
                 "success": "success", "failure": "failure", "exit": "exit"})  # turn left 90

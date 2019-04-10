@@ -26,7 +26,13 @@ def image_callback(msg):
         mask_red = cv2.inRange(hsv, lower_red, upper_red)
         object_count = 0
 
-        # cv2.imshow("window", mask_red)
+        h, w, d = image.shape
+        search_top = 1*h/2
+        # search_bot = 3*h/4 + 20
+
+        mask_red[0:search_top, 0:w] = 0
+
+        cv2.imshow("window", mask_red)
         gray = mask_red
         blurred = cv2.GaussianBlur(gray, (5, 5), 0)
         thresh = cv2.threshold(blurred, 60, 255, cv2.THRESH_BINARY)[1]
