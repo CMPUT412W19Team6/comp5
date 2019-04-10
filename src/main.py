@@ -1212,7 +1212,7 @@ if __name__ == "__main__":
         phase1_sm = StateMachine(outcomes=['success', 'failure', 'exit'])
         with phase1_sm:
             StateMachine.add("Finding1", FollowLine("1.0"), transitions={
-                             "see_red": "Turn11", "failure": "failure", "exit": "exit", "see_nothing": "failure", "see_long_red": "failure","all_done":"success"})
+                             "see_red": "success", "failure": "failure", "exit": "exit", "see_nothing": "failure", "see_long_red": "failure","all_done":"success"})
             StateMachine.add("Turn11", Turn(90), transitions={
                              "success": "Count1", "failure": "failure", "exit": "exit"})  # turn left 90 degrees
             StateMachine.add("Count1", DepthCount(), transitions={
@@ -1228,7 +1228,7 @@ if __name__ == "__main__":
         phase2_sm = StateMachine(outcomes=['success', 'failure', 'exit'])
         with phase2_sm:
             StateMachine.add("Finding2", FollowLine("2.0"), transitions={
-                "see_red": "Turn21", "failure": "failure", "exit": "exit", "see_nothing": "failure", "see_long_red": "failure","all_done":"success"})
+                "see_red": "Turn22", "failure": "failure", "exit": "exit", "see_nothing": "failure", "see_long_red": "failure","all_done":"success"})
             StateMachine.add("Turn21", Turn(180), transitions={
                              "success": "FollowToEnd", "failure": "failure", "exit": "exit"})
             StateMachine.add("FollowToEnd", FollowLine("2.1"), transitions={
@@ -1256,8 +1256,8 @@ if __name__ == "__main__":
             
             StateMachine.add("Finding3", FollowLine("3.1"), transitions={
                 "see_red": "Turn31", "failure": "failure", "exit": "exit", "see_nothing": "failure", "see_long_red": "failure", "all_done":"success"})
-            StateMachine.add("Turn31", Turn(0), transitions={
-                             "success": "BackupALittle", "failure": "failure", "exit": "exit"})  # turn left 90
+            StateMachine.add("Turn31", Turn(-90), transitions={
+                             "success": "Finding3", "failure": "failure", "exit": "exit"})  # turn left 90
             StateMachine.add("BackupALittle", Translate(0.10, -0.2), transitions={
                 "success": "CheckShape","failure": "failure", "exit": "exit"})
             StateMachine.add("CheckShape", CheckShape2(), transitions={
