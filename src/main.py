@@ -1250,7 +1250,7 @@ if __name__ == "__main__":
                          
 
         StateMachine.add("Ending", Signal4(True,1, True,1),
-                         transitions={"done": "success"})
+                         transitions={"done": "Phase1"})
 
         # # Phase 1 sub state
         phase1_sm = StateMachine(outcomes=['success', 'failure', 'exit'])
