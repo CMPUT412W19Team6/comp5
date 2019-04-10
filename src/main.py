@@ -47,6 +47,7 @@ GREEN_FOUND = False
 
 PHASE4_SHAPE_FOUND = False
 BOX_ID = 1
+PHASE3_LINE_FOUND = False
 PHASE4_BOX_FOUND = False
 PHASE4_GOAL_FOUND = False
 PHASE4_BOX_CHECKPOINT = ""
@@ -102,7 +103,7 @@ class FollowLine(State):
         self.dt = 1.0 / 20.0
 
     def execute(self, userdata):
-        global PHASE, FORWARD_CURRENT, TURN_CURRENT, linear_vel, red_timeout, Kp, Kd, Ki, IMAGE, GREEN_FOUND
+        global PHASE, FORWARD_CURRENT, TURN_CURRENT, linear_vel, red_timeout, Kp, Kd, Ki, IMAGE, GREEN_FOUND, PHASE3_LINE_FOUND
 
         FORWARD_CURRENT = 0.0
         TURN_CURRENT = 0.0
@@ -156,7 +157,7 @@ class FollowLine(State):
                 cy = int(M['m01']/M['m00'])
                 cv2.circle(image, (cx, cy), 20, (0, 0, 255), -1)
             
-            if self.phase == "3.1" and M['m00'] <= 0:
+            if self.phase == "3.1" and M['m00'] <= 0 and not PHASE3_LINE_FOUND:
                 Turn(180).execute(None)
 
                 while M['m00'] <= 0:
@@ -167,6 +168,8 @@ class FollowLine(State):
                 cx = int(M['m10']/M['m00'])
                 cy = int(M['m01']/M['m00'])
                 cv2.circle(image, (cx, cy), 20, (0, 0, 255), -1)
+            elif self.phase == "3.1" and M['m00'] > 0:
+                PHASE3_LINE_FOUND = True
 
 
             if self.phase == "4.2" and M['m00'] == 0:  # no more white line ahead
