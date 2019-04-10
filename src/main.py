@@ -1106,9 +1106,9 @@ class PushBox(State):
         #     MoveBaseGo(1.05).execute(None)
         # else:
         if not toRight:
-            MoveBaseGo(PHASE4_PUSH_Y + 0.35).execute(None)
+            MoveBaseGo(PHASE4_PUSH_Y + 0.41).execute(None)
         else:
-            MoveBaseGo(PHASE4_PUSH_Y + 0.35).execute(None)
+            MoveBaseGo(PHASE4_PUSH_Y + 0.4).execute(None) # pushing towards window
         # MoveBaseGo(PHASE4_PUSH_Y + 0.25).execute(None)
 
         # turn based on toRight
@@ -1118,7 +1118,7 @@ class PushBox(State):
             Turn(0).execute(None)
 
         # Push
-        dis = abs(PHASE4_BOX_X - PHASE4_GOAL_X) + 0.8 - 0.4
+        dis = abs(PHASE4_BOX_X - PHASE4_GOAL_X) + 0.8 - 0.475
         MoveBaseGo(dis).execute(None)
         # Translate(dis, 0.5).execute(None)
 
@@ -1277,15 +1277,15 @@ if __name__ == "__main__":
         move_list = {
             "point8": [Turn(90), MoveBaseGo(1.05), Turn(0), Translate(0.2, -0.2)],
             "point7": [Turn(90), MoveBaseGo(0.1), Turn(180), MoveBaseGo(0.6), Turn(-90)],
-            "point6": [Turn(180), MoveBaseGo(0.875), Turn(-90)],
+            "point6": [Turn(180), MoveBaseGo(0.85), Turn(-90)],
             # "look_for_box": [Turn(180), MoveBaseGo(1.2), Turn(90), MoveBaseGo(0.6), Turn(0), Translate(0.1)],
             # "point1": [Translate(0.1,0.2), Turn(-90), MoveBaseGo(1.2), Turn(90)],
-            "point1": [Turn(180), MoveBaseGo(1.15), Turn(90), Translate(0.4)],
+            "point1": [Turn(180), MoveBaseGo(1.1), Turn(90), Translate(0.4)],
             "point2": [Turn(0), MoveBaseGo(0.75), Turn(90)],
             "point3": [Turn(0), MoveBaseGo(0.8), Turn(90)],
-            "point4": [Turn(0), MoveBaseGo(0.85), Turn(90)],
+            "point4": [Turn(0), MoveBaseGo(0.85), Turn(90), Translate(0.15)],
             "point5": [Turn(0), MoveBaseGo(0.8), Turn(90)],
-            "exit": [Turn(-90), MoveBaseGo(0.7), Turn(-90)]
+            "exit": [Turn(-90), MoveBaseGo(0.75), Turn(-90)]
         }
 
         # park_distance =       [0.6,       0.5,       0.5,     0.5 ,       0.5,       0.5,   0.5,      0.5,      0.5]
