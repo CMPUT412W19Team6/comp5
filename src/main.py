@@ -155,6 +155,15 @@ class FollowLine(State):
                 cx = int(M['m10']/M['m00'])
                 cy = int(M['m01']/M['m00'])
                 cv2.circle(image, (cx, cy), 20, (0, 0, 255), -1)
+            
+            if self.phase == "3.1":
+                Turn(180).execute()
+
+                while M['m00'] <= 0:
+                    self.twist.linear.x = 0
+                    self.twist.angular.z = 0.55
+                    self.cmd_vel_pub.publish(self.twist)
+
 
             if self.phase == "4.2" and M['m00'] == 0:  # no more white line ahead
                 self.start_timeout = True
