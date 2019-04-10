@@ -81,7 +81,7 @@ class FollowLine(State):
 
     def __init__(self, phase="1.0"):
         State.__init__(self, outcomes=[
-                       "see_red", "exit", "failure", "see_nothing", "see_long_red"])
+                       "see_red", "exit", "failure", "see_nothing", "see_long_red", "all_done"])
         self.cmd_vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size=1)
         self.phase = phase
         self.green_start_pub = rospy.Publisher(
@@ -204,8 +204,11 @@ class FollowLine(State):
                         elif self.phase == "3.1":
                             if self.red_object_count == 1:
                                 self.temporary_stop = True
+                            elif self.red_object_count > 4:
+                                return "all_done"
                             elif self.red_object_count >= 2:
                                 self.start_timeout = True
+                                
                     
                     self.object_area = 0
                     
@@ -1206,14 +1209,14 @@ if __name__ == "__main__":
             # transitions={'pressed': 'Phase4', 'exit': 'failure'})
                          
 
-        StateMachine.add("Ending", FollowLine(),
-                         transitions={"see_red": "Wait", "failure": "failure", "exit": "Wait", "see_nothing": "failure", "see_long_red": "failure"})
+        StateMachine.add("Ending", Signal4(True,1, True,1),
+                         transitions={"done": "success"})
 
         # # Phase 1 sub state
         phase1_sm = StateMachine(outcomes=['success', 'failure', 'exit'])
         with phase1_sm:
             StateMachine.add("Finding1", FollowLine("1.0"), transitions={
-                             "see_red": "Turn11", "failure": "failure", "exit": "exit", "see_nothing": "failure", "see_long_red": "failure"})
+                             "see_red": "Turn11", "failure": "failure", "exit": "exit", "see_nothing": "failure", "see_long_red": "failure","all_done":"success"})
             StateMachine.add("Turn11", Turn(90), transitions={
                              "success": "Count1", "failure": "failure", "exit": "exit"})  # turn left 90 degrees
             StateMachine.add("Count1", DepthCount(), transitions={
@@ -1229,11 +1232,11 @@ if __name__ == "__main__":
         phase2_sm = StateMachine(outcomes=['success', 'failure', 'exit'])
         with phase2_sm:
             StateMachine.add("Finding2", FollowLine("2.0"), transitions={
-                "see_red": "Turn21", "failure": "failure", "exit": "exit", "see_nothing": "failure", "see_long_red": "failure"})
+                "see_red": "Turn21", "failure": "failure", "exit": "exit", "see_nothing": "failure", "see_long_red": "failure","all_done":"success"})
             StateMachine.add("Turn21", Turn(180), transitions={
                              "success": "FollowToEnd", "failure": "failure", "exit": "exit"})
             StateMachine.add("FollowToEnd", FollowLine("2.1"), transitions={
-                             "see_red": "TurnLeftAbit", 'failure': "FindGreenShape", "exit": "exit", "see_nothing": "failure", "see_long_red": "failure"})
+                             "see_red": "TurnLeftAbit", 'failure': "FindGreenShape", "exit": "exit", "see_nothing": "failure", "see_long_red": "failure","all_done":"success"})
             StateMachine.add("TurnLeftAbit", Turn(-100), transitions={
                              "success": "Backup", "failure": "failure", "exit": "exit"})
             StateMachine.add("Backup", Translate(
@@ -1243,7 +1246,7 @@ if __name__ == "__main__":
             StateMachine.add("TurnBack", Turn(90), transitions={
                 "success": "MoveForward", "failure": "failure", "exit": "exit"})
             StateMachine.add("MoveForward", FollowLine("2.2"), transitions={
-                "see_red": "MoveStraightToPoint", "failure": "failure", "exit": "exit", "see_nothing": "failure", "see_long_red": "failure"})
+                "see_red": "MoveStraightToPoint", "failure": "failure", "exit": "exit", "see_nothing": "failure", "see_long_red": "failure","all_done":"success"})
             StateMachine.add("MoveStraightToPoint", Translate(0.30, 0.2), transitions={
                 "success": "Turn22","failure": "failure", "exit": "exit"})
             StateMachine.add("Turn22", Turn(90), transitions={
@@ -1256,7 +1259,7 @@ if __name__ == "__main__":
         with phase3_sm:
             
             StateMachine.add("Finding3", FollowLine("3.1"), transitions={
-                "see_red": "Turn31", "failure": "failure", "exit": "exit", "see_nothing": "failure", "see_long_red": "failure"})
+                "see_red": "Turn31", "failure": "failure", "exit": "exit", "see_nothing": "failure", "see_long_red": "failure", "all_done":"success"})
             StateMachine.add("Turn31", Turn(0), transitions={
                              "success": "BackupALittle", "failure": "failure", "exit": "exit"})  # turn left 90
             StateMachine.add("BackupALittle", Translate(0.10, -0.2), transitions={
@@ -1308,7 +1311,7 @@ if __name__ == "__main__":
             i = 0
 
             StateMachine.add("Finding4", FollowLine("4.1"), transitions={	  
-                "see_long_red": "MoveForward", "see_nothing": "failure", "see_red": "failure", "failure": "failure", "exit": "exit"	
+                "see_long_red": "MoveForward", "see_nothing": "failure", "see_red": "failure", "failure": "failure", "exit": "exit"	,"all_done":"success"
             })
             StateMachine.add("MoveForward", Translate(distance=0.65, linear=0.2), transitions={
                 "success": "Turn41",  "failure": "failure", "exit": "exit"
@@ -1319,7 +1322,7 @@ if __name__ == "__main__":
             })
 
             StateMachine.add("FollowRamp", FollowLine("4.2"), transitions={
-                "see_nothing": checkpoint_sequence[0] + "-0", "see_long_red": "failure", "see_red": "failure", "failure": "failure", "exit": "exit"
+                "see_nothing": checkpoint_sequence[0] + "-0", "see_long_red": "failure", "see_red": "failure", "failure": "failure", "exit": "exit" ,"all_done":"success"
             })
 
             for i in xrange(len(checkpoint_sequence)):
