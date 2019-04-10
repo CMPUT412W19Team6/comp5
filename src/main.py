@@ -181,6 +181,7 @@ class FollowLine(State):
                     thresh = 1000
                     if self.phase=="2.2":
                         thresh = 1000
+                        print(".....!!!!", self.object_area)
                     
                     if self.object_area > thresh:  # valid small red object in front
                         self.red_object_count += 1
@@ -1088,10 +1089,11 @@ class PushBox(State):
         # if not toRight:
         #     MoveBaseGo(1.05).execute(None)
         # else:
-        if not toRight:
-            MoveBaseGo(PHASE4_PUSH_Y + 0.3).execute(None)
-        else:
-            MoveBaseGo(PHASE4_PUSH_Y + 0.4).execute(None)
+        # if not toRight:
+        #     MoveBaseGo(PHASE4_PUSH_Y + 0.3).execute(None)
+        # else:
+        #     MoveBaseGo(PHASE4_PUSH_Y + 0.4).execute(None)
+        MoveBaseGo(PHASE4_PUSH_Y + 0.25).execute(None)
 
         # turn based on toRight
         if toRight:
@@ -1225,7 +1227,7 @@ if __name__ == "__main__":
                 "success": "MoveForward", "failure": "failure", "exit": "exit"})
             StateMachine.add("MoveForward", FollowLine("2.2"), transitions={
                 "see_red": "MoveStraightToPoint", "failure": "failure", "exit": "exit", "see_nothing": "failure", "see_long_red": "failure","all_done":"success"})
-            StateMachine.add("MoveStraightToPoint", Translate(0.30, 0.2), transitions={
+            StateMachine.add("MoveStraightToPoint", Translate(0.50, 0.2), transitions={
                 "success": "Turn22","failure": "failure", "exit": "exit"})
             StateMachine.add("Turn22", Turn(90), transitions={
                 "success": "success", "failure": "failure", "exit": "exit"})  # turn left 90
@@ -1258,11 +1260,11 @@ if __name__ == "__main__":
 
         move_list = {
             "point8": [Turn(90), MoveBaseGo(1.05), Turn(0), Translate(0.2, -0.2)],
-            "point7": [Turn(90), MoveBaseGo(0.1), Turn(180), MoveBaseGo(0.55), Turn(-90)],
-            "point6": [Turn(180), MoveBaseGo(0.75), Turn(-90)],
+            "point7": [Turn(90), MoveBaseGo(0.1), Turn(180), MoveBaseGo(0.6), Turn(-90)],
+            "point6": [Turn(180), MoveBaseGo(0.8), Turn(-90)],
             # "look_for_box": [Turn(180), MoveBaseGo(1.2), Turn(90), MoveBaseGo(0.6), Turn(0), Translate(0.1)],
             # "point1": [Translate(0.1,0.2), Turn(-90), MoveBaseGo(1.2), Turn(90)],
-            "point1": [Turn(180), MoveBaseGo(1.2), Turn(90), Translate(0.15)],
+            "point1": [Turn(180), MoveBaseGo(1.15), Turn(90), Translate(0.3)],
             "point2": [Turn(0), MoveBaseGo(0.75), Turn(90)],
             "point3": [Turn(0), MoveBaseGo(0.8), Turn(90)],
             "point4": [Turn(0), MoveBaseGo(0.85), Turn(90)],
@@ -1365,7 +1367,7 @@ if __name__ == "__main__":
             StateMachine.add("Push_Box", PushBox() , transitions={"done":"Push_Box_Move-1"})
             StateMachine.add("Push_Box_Move-1",Translate(0.2) , transitions={"success": "Push_Box_Move-2", "failure": "failure", "exit": "exit"})
             StateMachine.add("Push_Box_Move-2", Turn(-90), transitions={ "success": "Push_Box_Move-3", "failure": "failure", "exit": "exit"})
-            StateMachine.add("Push_Box_Move-3", MoveBaseGo(0.5),transitions={"success": "Push_Box_Go_To_End", "failure": "failure", "exit": "exit"})
+            StateMachine.add("Push_Box_Move-3", Translate(0.5, 0.5),transitions={"success": "Push_Box_Go_To_End", "failure": "failure", "exit": "exit"})
             StateMachine.add("Push_Box_Go_To_End", MoveBaseUsingOdom() ,transitions={"done": "exit-0"})
 
             StateMachine.add("ForwardUntilWhite", Translate(),
