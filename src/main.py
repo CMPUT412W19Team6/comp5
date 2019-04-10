@@ -60,6 +60,8 @@ PHASE4_DELTA_X = 0
 PHASE4_PUSH_Y = 0
 PHASE4_START_ADJUST= False
 PHASE4_FINISHED_ADJUST = False
+
+
 class WaitForButton(State):
     def __init__(self):
         State.__init__(self, outcomes=["pressed", "exit"])
@@ -1331,7 +1333,7 @@ if __name__ == "__main__":
                                 "success": checkpoint_sequence[i] + "-" + "ParkNext", "failure": "failure", "exit": "exit"
                             })
                             StateMachine.add(checkpoint_sequence[i] + "-" + "ParkNext", ParkNext(checkpoint_sequence[i]), transitions={
-                                "see_shape": checkpoint_sequence[i] + "-" + "MatchShape", "see_AR_goal": checkpoint_sequence[i] + "-" + "SignalARGoal", "see_AR_box": checkpoint_sequence[i] + "-" + "SignalARBox", "find_nothing": checkpoint_sequence[i] + "-" + "CheckCompletionNoBackup"
+                                "see_shape": checkpoint_sequence[i] + "-" + "CheckCompletionNoBackup", "see_AR_goal": checkpoint_sequence[i] + "-" + "SignalARGoal", "see_AR_box": checkpoint_sequence[i] + "-" + "SignalARBox", "find_nothing": checkpoint_sequence[i] + "-" + "CheckCompletionNoBackup"
                             })
 
                             StateMachine.add(checkpoint_sequence[i] + "-" + "ParkShape", MoveBaseGo(park_distance[i]), transitions={
