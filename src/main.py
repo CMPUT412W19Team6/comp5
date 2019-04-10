@@ -77,7 +77,6 @@ def reset():
     UNKNOWN_CHECKPOINT = 0
     PHASE4_TASK_COMPLETED = 0
 
-    BRIDGE = cv_bridge.CvBridge()
     IMAGE = None
 
     TB_POSE = None
@@ -1048,13 +1047,14 @@ class ParkNext(State):
         POSE[2] =angles_lib.normalize_angle( angles[2] )
 
 class Signal4(State):
-    def __init__(self, led1, led1color, led2=False, led2color=None, playsound=True):
+    def __init__(self, led1, led1color, led2=False, led2color=None, playsound=True, all_done=False):
         State.__init__(self, outcomes=["done"])
         self.led1 = led1
         self.led1color = led1color
         self.led2 = led2
         self.led2color = led2color
         self.playsound = playsound
+        self.all_done = all_done
 
         self.led1_pub = rospy.Publisher(
             "/mobile_base/commands/led1", Led, queue_size=1)
@@ -1073,16 +1073,17 @@ class Signal4(State):
             self.led1_pub.publish(self.led1color)
         if self.led2:
             self.led2_pub.publish(self.led2color)
-
+        if self.all_done:
+            reset()
         if  self.led1 or self.led2:
             rospy.sleep(rospy.Duration(1.5))
             if self.led1:
                 self.led1_pub.publish(0)
             if self.led2:
                 self.led2_pub.publish(0)
-        global ALL_DONE
-        if ALL_DONE:
-            reset()
+        # global ALL_DONE
+        # if ALL_DONE:
+        #     reset()
         return "done"
 
 class CheckCompletion(State):
@@ -1251,7 +1252,7 @@ if __name__ == "__main__":
             # transitions={'pressed': 'Phase4', 'exit': 'failure'})
                          
 
-        StateMachine.add("Ending", Signal4(True,1, True,1),
+        StateMachine.add("Ending", Signal4(True,1, True,1, all_done=True),
                          transitions={"done": "Phase1"})
 
         # # Phase 1 sub state
