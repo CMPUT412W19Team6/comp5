@@ -217,9 +217,16 @@ class FollowLine(State):
 
             if self.phase == "2.1":
                 self.green_start_pub.publish(Bool(True))
-            # if self.phase == "2.1":
-            #     Kp = 1.0 / 350.0
-            #     Kd = 1.0 / 700.0
+
+            speed = linear_vel
+            local_kp = Kp
+            local_kd = Kd
+            local_ki = Ki
+
+            if self.phase == "2.1" or self.phase == "2.2":
+                speed = 0.2
+                local_kp = 1.0 / 300.0
+                local_kd = 1.0 / 700.0
             # else:
             #     Kp = 1.0 / 400.0
             #     Kd = 1.0 / 700.0
@@ -258,8 +265,8 @@ class FollowLine(State):
                 integral += error * self.dt
                 derivative = (error - previous_error) / self.dt
 
-                self.twist.linear.x = linear_vel
-                self.twist.angular.z = -(Kp * float(error) + Kd * derivative + Ki * integral)
+                self.twist.linear.x = speed
+                self.twist.angular.z = -(local_kp * float(error) + local_kd * derivative + local_ki * integral)
                 self.cmd_vel_pub.publish(self.twist)
 
                 previous_error = error
@@ -432,7 +439,7 @@ class Turn(State):
         goal = angles_lib.normalize_angle(goal)
 
         cur = np.abs(angles_lib.normalize_angle(self.tb_rot[2]) - goal)
-        speed = 0.55
+        speed = 0.75
         rate = rospy.Rate(30)
 
         direction = turn_direction
@@ -507,36 +514,6 @@ class DepthCount(State):
         self.object_count = msg.data
         self.count1_start_pub.publish(Bool(False))
         self.count_finished = True
-
-    # def image_callback(self, msg):
-    #     global RED_VISIBLE, red_area_threshold, white_max_h, white_max_s, white_max_v, white_min_h, white_min_s, white_min_v, red_max_h, red_max_s, red_max_v, red_min_h, red_min_s, red_min_v
-
-    #     if self.count_start:
-    #         rospy.sleep(rospy.Duration(2))
-    #         image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
-    #         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-
-    #         lower_red = np.array([red_min_h,  red_min_s,  red_min_v])
-    #         upper_red = np.array([red_max_h, red_max_s, red_max_v])
-
-    #         mask_red = cv2.inRange(hsv, lower_red, upper_red)
-    #         self.object_count = 0
-
-    #         # cv2.imshow("window", mask_red)
-    #         gray = mask_red
-    #         blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-    #         thresh = cv2.threshold(blurred, 60, 255, cv2.THRESH_BINARY)[1]
-    #         cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
-    #                                 cv2.CHAIN_APPROX_SIMPLE)
-    #         cnts = imutils.grab_contours(cnts)
-    #         areas = [c for c in cnts if cv2.contourArea(c) > 140]
-    #         self.object_count = len(areas)
-    #         if len(areas) > 3:
-    #             self.object_count = 3
-    #         if len(areas) < 1:
-    #             self.object_count = 1
-
-    #         self.count_finished = True
 
 
 class Signal1(State):
@@ -1125,6 +1102,7 @@ class PushBox(State):
         # Push
         dis = abs(PHASE4_BOX_X - PHASE4_GOAL_X) + 0.8 - 0.4
         MoveBaseGo(dis).execute(None)
+        # Translate(dis, 0.5).execute(None)
 
         # Signal when done
         Signal4(True, 1, True, 3).execute(None)
@@ -1169,10 +1147,10 @@ def marker_callback(msg):
 if __name__ == "__main__":
     rospy.init_node('comp5')
 
-    Kp = rospy.get_param("~Kp", 1.0 / 300.0)
-    Kd = rospy.get_param("~Kd", 1.0 / 700.0)
+    Kp = rospy.get_param("~Kp", 1.0 / 200.0)
+    Kd = rospy.get_param("~Kd", 1.0 / 400.0)
     Ki = rospy.get_param("~Ki", 0)
-    linear_vel = rospy.get_param("~linear_vel", 0.3)
+    linear_vel = rospy.get_param("~linear_vel", 0.5)
 
     white_max_h = rospy.get_param("~white_max_h", 255)
     white_max_s = rospy.get_param("~white_max_s", 72)
@@ -1190,7 +1168,7 @@ if __name__ == "__main__":
     red_min_s = rospy.get_param("~red_min_s", 64.8)
     red_min_v = rospy.get_param("~red_min_v", 194)
 
-    red_timeout = rospy.Duration(rospy.get_param("~red_timeout", 1.0))
+    red_timeout = rospy.Duration(rospy.get_param("~red_timeout", 0.5))
 
     red_area_threshold = rospy.get_param("~red_area_threshold", 25000)
 
@@ -1282,30 +1260,25 @@ if __name__ == "__main__":
             "point8": [Turn(90), MoveBaseGo(1.1), Turn(0), Translate(0.2, -0.2)],
             "point7": [Turn(90), MoveBaseGo(0.1), Turn(180), MoveBaseGo(0.65), Turn(-90)],
             "point6": [Turn(180), MoveBaseGo(0.75), Turn(-90)],
-            "look_for_box": [Turn(180), MoveBaseGo(1.2), Turn(90), MoveBaseGo(0.6), Turn(0), Translate(0.1)],
-            "point1": [Translate(0.1,0.2), Turn(-90), MoveBaseGo(1.2), Turn(90)],
+            # "look_for_box": [Turn(180), MoveBaseGo(1.2), Turn(90), MoveBaseGo(0.6), Turn(0), Translate(0.1)],
+            # "point1": [Translate(0.1,0.2), Turn(-90), MoveBaseGo(1.2), Turn(90)],
+            "point1": [Turn(180), MoveBaseGo(1.2), Turn(90)],
             "point2": [Turn(0), MoveBaseGo(0.75), Turn(90)],
             "point3": [Turn(0), MoveBaseGo(0.8), Turn(90)],
             "point4": [Turn(0), MoveBaseGo(0.85), Turn(90)],
             "point5": [Turn(0), MoveBaseGo(0.8), Turn(90)],
             "exit": [Turn(-90), MoveBaseGo(0.7), Turn(-90)]
-
-            # "point8": [Turn(90), MoveBaseGo(1.2), Turn(0)],
-            # "point5": [MoveBaseGo(0.25), Turn(90), MoveBaseGo(0.2), Turn(90)],
-            # "point4": [Turn(180), MoveBaseGo(0.80), Turn(90)],
-            # "point7": [Turn(180), MoveBaseGo(0.45), Turn(-90)], 
-            # "point6": [Turn(180), MoveBaseGo(0.75), Turn(-90)],
-            # "point3": [Turn(0), MoveBaseGo(0.4), Turn(90)],
-            # "point2": [Turn(180), MoveBaseGo(0.8), Turn(90) ],
-            # "point1": [Turn(180), MoveBaseGo(0.8), Turn(90)],
-            # "exit":   [Turn(-90), MoveBaseGo(1.6), Turn(-90)],
         }
 
-        park_distance =       [0.6,       0.5,       0.5,     0.5 ,       0.5,       0.5,   0.5,      0.5,      0.5]
+        # park_distance =       [0.6,       0.5,       0.5,     0.5 ,       0.5,       0.5,   0.5,      0.5,      0.5]
 
-        # checkpoint_sequence = ["point8", "point7", "point6", "point1", "point6", "point3", "point2", "point1", "exit"]
-        checkpoint_sequence = ["point8", "point7", "point6", "look_for_box" ,"point1", "point2","point3","point4","point5", "exit"]
-        checkpoint_backup_angle = [0, -90, -90, 90, 90, 90,90,90,90,90]
+        # checkpoint_sequence = ["point8", "point7", "point6", "look_for_box" ,"point1", "point2","point3","point4","point5", "exit"]
+
+        # checkpoint_backup_angle = [0, -90, -90, 90, 90, 90,90,90,90,90]
+
+        park_distance =       [0.6,       0.5,       0.5,       0.5,       0.5,   0.5,      0.5,      0.5]
+        checkpoint_sequence = ["point8", "point7", "point6" ,"point1", "point2","point3","point4","point5", "exit"]
+        checkpoint_backup_angle = [0, -90, -90, 90, 90,90,90,90,90]
 
         with phase4_sm:
             i = 0
