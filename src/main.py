@@ -229,7 +229,7 @@ class FollowLine(State):
                     
                     self.object_area = 0
                     
-            cv2.imshow("window", mask_red)
+            cv2.imshow("window", mask)
             cv2.waitKey(3)
 
             if self.phase == "2.1":
@@ -241,8 +241,8 @@ class FollowLine(State):
             local_ki = Ki
 
             if self.phase == "2.1" or self.phase == "2.2":
-                speed = 0.2
-                local_kp = 1.0 / 300.0
+                speed = 0.3
+                local_kp = 1.0 / 200.0
                 local_kd = 1.0 / 700.0
             # else:
             #     Kp = 1.0 / 400.0
@@ -260,7 +260,7 @@ class FollowLine(State):
                 start_time = rospy.Time.now()
 
             r_timeout = red_timeout
-            if self.phase=="2.2" or self.phase=="2.1":
+            if self.phase=="2.1":
                 r_timeout = rospy.Duration(0)
             if self.start_timeout and start_time + r_timeout < rospy.Time.now():
                 start_time = None
@@ -1106,7 +1106,7 @@ class PushBox(State):
         #     MoveBaseGo(1.05).execute(None)
         # else:
         if not toRight:
-            MoveBaseGo(PHASE4_PUSH_Y + 0.4).execute(None)
+            MoveBaseGo(PHASE4_PUSH_Y + 0.55).execute(None)
         else:
             MoveBaseGo(PHASE4_PUSH_Y + 0.25).execute(None)
         # MoveBaseGo(PHASE4_PUSH_Y + 0.25).execute(None)
@@ -1119,8 +1119,8 @@ class PushBox(State):
 
         # Push
         dis = abs(PHASE4_BOX_X - PHASE4_GOAL_X) + 0.8 - 0.4
-        # MoveBaseGo(dis).execute(None)
-        Translate(dis, 0.5).execute(None)
+        MoveBaseGo(dis).execute(None)
+        # Translate(dis, 0.5).execute(None)
 
         # Signal when done
         Signal4(True, 1, True, 3).execute(None)
@@ -1277,10 +1277,10 @@ if __name__ == "__main__":
         move_list = {
             "point8": [Turn(90), MoveBaseGo(1.05), Turn(0), Translate(0.2, -0.2)],
             "point7": [Turn(90), MoveBaseGo(0.1), Turn(180), MoveBaseGo(0.6), Turn(-90)],
-            "point6": [Turn(180), MoveBaseGo(0.8), Turn(-90)],
+            "point6": [Turn(180), MoveBaseGo(0.875), Turn(-90)],
             # "look_for_box": [Turn(180), MoveBaseGo(1.2), Turn(90), MoveBaseGo(0.6), Turn(0), Translate(0.1)],
             # "point1": [Translate(0.1,0.2), Turn(-90), MoveBaseGo(1.2), Turn(90)],
-            "point1": [Turn(180), MoveBaseGo(1.15), Turn(90), Translate(0.3)],
+            "point1": [Turn(180), MoveBaseGo(1.15), Turn(90), Translate(0.4)],
             "point2": [Turn(0), MoveBaseGo(0.75), Turn(90)],
             "point3": [Turn(0), MoveBaseGo(0.8), Turn(90)],
             "point4": [Turn(0), MoveBaseGo(0.85), Turn(90)],
