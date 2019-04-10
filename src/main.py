@@ -1028,7 +1028,7 @@ class Signal4(State):
             self.led2_pub.publish(self.led2color)
 
         if  self.led1 or self.led2:
-            rospy.sleep(rospy.Duration(3))
+            rospy.sleep(rospy.Duration(1.5))
             if self.led1:
                 self.led1_pub.publish(0)
             if self.led2:
@@ -1103,7 +1103,7 @@ class PushBox(State):
         #     MoveBaseGo(1.05).execute(None)
         # else:
         if not toRight:
-            MoveBaseGo(PHASE4_PUSH_Y + 0.3).execute(None)
+            MoveBaseGo(PHASE4_PUSH_Y + 0.4).execute(None)
         else:
             MoveBaseGo(PHASE4_PUSH_Y + 0.25).execute(None)
         # MoveBaseGo(PHASE4_PUSH_Y + 0.25).execute(None)
@@ -1116,8 +1116,8 @@ class PushBox(State):
 
         # Push
         dis = abs(PHASE4_BOX_X - PHASE4_GOAL_X) + 0.8 - 0.4
-        MoveBaseGo(dis).execute(None)
-        # Translate(dis, 0.5).execute(None)
+        # MoveBaseGo(dis).execute(None)
+        Translate(dis, 0.5).execute(None)
 
         # Signal when done
         Signal4(True, 1, True, 3).execute(None)
