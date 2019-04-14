@@ -1,6 +1,6 @@
 # Competition 5: Game Strategy
 
-**Description:** In this competition, the robot is supposed to follow a line, count objects, match similar shaped objects, find AR tags and park at certain points.
+**Description:** In this competition, the robot is supposed to follow a line, count objects, match similar shaped objects, find AR tags and push a box with AR tags to an AR tag goal location. We were supposed to pick a stragtegy that gives us the most mark. Our original strategy was to complete all the tasks all the time and start the robot again once it's finished. Then we learned during the competition that we are not allowed to manually start the robot ourselves so we ended up just let the robot finish one complete run.
 
 ## 1. Purpose
 
@@ -30,45 +30,76 @@ For this competition, we want the robot to follow a pre-defined course and do di
         
         b. Location 2: 
         
-        Detect how many geometric shapes are there (Maximum 3), signal the result with LED lights and sound,and recognize what the green shape is (one of the three shapes: triangle, square, circle). 
+        * Detect how many geometric shapes are there (Maximum 3), signal the result with LED lights and sound,and recognize what the green shape is (one of the three shapes: triangle, square, circle). 
         Example picture:         
         <img src="https://github.com/CMPUT412W19Team6/Competition2/blob/master/location2.png?s=200" width="200">
+        
         <!-- Example picture: ![location 2 picture](https://github.com/CMPUT412W19Team6/Competition2/blob/master/location2.png?s=200) -->
          c. Location 3: 
         
-        Recognize the red shapes on the left one by one, and signal with a sound when finding one that's matching the green shape discovered at Location 2. 
+         * Recognize the red shapes on the left one by one, and signal with a sound when finding one that's matching the green shape discovered at Location 2. 
         Example picture:         
         <img src="https://github.com/CMPUT412W19Team6/Competition2/blob/master/location3.png?s=200" width="200">
         <!-- Example picture: ![location 3 picture](https://github.com/CMPUT412W19Team6/Competition2/blob/master/location3.png?s=200) -->
         
         d. Location 4: 
-        
-        * Park at one of the parking spots specified at the start of the run, sigal sound and red LED light.
-        
-        * Park at the spot where the AR tag is located, signal sound and green LED light.
-        
+          > Note1: The box must has AR tag id=1 from from this [link](http://wiki.ros.org/ar_track_alvar?action=AttachFile&do=view&target=markers0to8.png) and the AR tag for the goal position must have a different tag id from the box which is less than 9.
+          
+          > Note2:Parking stalls, against the back wall, are numbered (counting from the window-on-the-left) #1, 2, 3, 4, & 5. The box will only be in one of #2,3,4. The goal position will be in any of #1 to #5 that doesn't has a box. The Shape will be in the squares that's `NOT` any of #1,2,3,4,5.
+           
+        * Find the goal position marked by an AR tag and signal a sound and a green LED light
+        	
             <img src="https://github.com/CMPUT412W19Team6/Comp3/blob/master/ar.jpg" width="200" title="AR tag">
+           
+        * Find AR tag wrapped box and signal a sound and red LED light.
         
-        * Park at the spot that has the object with the same shape as the green shape from Location 2, signal sound and orange LED light
+            <img src="https://github.com/CMPUT412W19Team6/comp5/blob/master/box.png" width="200" title="AR box">
         
+        * Find and Park at the spot that has the object with the same shape as the green shape from Location 2, signal sound and orange LED light when found and signal sound, origin and green LED lights when parked.
+			
             <img src="https://github.com/CMPUT412W19Team6/Comp3/blob/master/object.jpg" width="200" title="shape">
         
-        <!-- Example picture: ![location 3 picture](https://github.com/CMPUT412W19Team6/Competition2/blob/master/location3.png?s=200) -->
-
-
+        * Push the Box into the goal spot identified by the AR marker
+        
 
 ## 2. Pre-requisites
 
-## 2.1 Hardware requirement
+### 2.1 Hardware requirement
 
-- A kobuki turtlebot base
+- A kobuki turtlebot base pack
+  - Robot base
+  - Middle Plate
+  - 39mm Poles *6
+  - 50mm/39mm Poles *4
+  - 83mm Poles *2
+  - C-Clamps for holding the Xtion Pro camera
+  - Asus Xtion Pro Plate
+  - A block of Foam for better box pushing effect
 - A USB Camera
 - An Asus Xtion Pro
 - A controller (prefered logitech)
 - A device with minimum 4 usb ports
 - The course set up 
 
+#### 2.11 Kobuki base set up
+
+  <img src="https://github.com/CMPUT412W19Team6/comp5/blob/master/robot1.jpg" width="200" title="robot1">
+  <img src="https://github.com/CMPUT412W19Team6/comp5/blob/master/robot2.jpg" width="200" title="robot2">
+  <img src="https://github.com/CMPUT412W19Team6/comp5/blob/master/robot3.jpg" width="200" title="robot3">
+  <img src="https://github.com/CMPUT412W19Team6/comp5/blob/master/robot4.jpg" width="200" title="robot4">
+
+  1. Combine 4 39mm poles and 4 50mm/39mm poles together.
+  2. Install the combined poles onto the base as shown in the above pictures.
+  3. Place the Middle Plate ontop.
+  4. Clap the Xtion Pro on the Middle Plate at the front of the robot.
+  5. Install 2 83mm poles behind the Xtion pro as shown in the above pictures.
+  6. Place the Xtion Pro Plate on top of those 2 poles.
+  7. Place the usb camera on the Xtion Pro Plate and make it face 45 degrees downwards. Tape if if necessary.
+  8. Install 2 39mm poles at on the base below the Middle Plate.
+  9. Put the Foam against these 2 poles and fix it by the C-Clamp.
+  
 ### 2.2 Software requirement
+> Note: The navigation task did not use any map or amcl. It's purely based on odom.
 
 - ROS kinetic (which includes opencv2 ros package) ([Guide here](http://wiki.ros.org/kinetic/Installation/Ubuntu))
 
@@ -113,16 +144,21 @@ For this competition, we want the robot to follow a pre-defined course and do di
   ```
   sudo apt-get install ros-kinetic-ar-track-alvar
   ```
+- usb_cam ([Wiki here](http://wiki.ros.org/usb_cam))
+  ```
+  sudo apt-get -install ros-kinetic-usb-cam
+  ```
 ## 3. Execution
 
 ### 3.1 Quickstart
+0. Set up the court and your robot base as described earlier.
 
 1. Clone this repo into the source directory of your catkin workspace (e.g. catkin_ws/src)
 
    ```bash
    # under catkin_ws/src folder
-   mkdir comp2
-   git clone https://github.com/CMPUT412W19Team6/Competition2.git
+   mkdir comp5
+   git clone https://github.com/CMPUT412W19Team6/comp5.git comp5
    ```
 
 2. Run catkin_make and source the setup.bash
@@ -133,26 +169,18 @@ For this competition, we want the robot to follow a pre-defined course and do di
    source ./devel/setup.bash
    ```
 
-3. Connect your your kobuki base, Asus Xtion Pro and controller.
+3. Connect your your kobuki base, Asus Xtion Pro, controller and usb camera.
 
-4. Power up the kobuki base and put it on the start position
+4. Power up the kobuki base and put it on the start position. <strong>Make sure the robot is facing starting forward. </strong> 
 
 5. Start the library
 
    ```bash
    roslaunch comp3 comp3.launch
    ```
-5. Specify the parking spot of location 3 by doing one of the following button combo on the joypad
-   ```
-   1st spot: Left Bar + A
-   2nd spot: Left Bar + B
-   3rd spot: Left Bar + X
-   4th spot: Left Bar + Y
-   5th spot: Right Bar + A
-   6th spot: Right Bar + B
-   7th spot: Right Bar + X
-   8th spot: Right Bar + Y
-   ```
+   
+6. View the image from usb_cam to make sure that the the white lines are at the center of the image. (e.g. You could use rqt for this task) 
+
 6. Start the turtlebot by pressing A on the controller
 
 
@@ -266,13 +294,5 @@ _Concept_:
             1.3.3 Go back until the robot is back at where it was at step 1.3
     2. Go to the exit point and switch to next phase
         
-      
-## 5. Lesson Learned
 
-### Clean up code before competition
-    
-    During our competition, our last push to the github contains a lot of debugging lines where we commented out 
-    some part of the functionalities for testing purpose. We didn't realize that during running our competition and
-    ended up using debuging code for the whole competition part. 
-    
-## 6.[Competition Video](https://drive.google.com/file/d/1rqg_HoAU1SjKNqqhCAPV1xClTwfXrRAY/view?usp=sharing)
+## 6.Competition Video: [Link](https://youtu.be/xGVi-B6u3OI)
