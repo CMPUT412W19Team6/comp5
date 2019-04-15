@@ -81,7 +81,7 @@ For this competition, we want the robot to follow a pre-defined course and do di
 - A device with minimum 4 usb ports
 - The course set up 
 
-#### 2.11 Kobuki base set up
+#### 2.1.1 Kobuki base set up
 
   <img src="https://github.com/CMPUT412W19Team6/comp5/blob/master/robot1.jpg" width="200" title="robot1">
   <img src="https://github.com/CMPUT412W19Team6/comp5/blob/master/robot2.jpg" width="200" title="robot2">
