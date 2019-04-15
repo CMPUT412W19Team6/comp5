@@ -131,22 +131,26 @@ For this competition, we want the robot to follow a pre-defined course and do di
 - Python2.7 ([Guide here](https://www.python.org/))
 
 - Python package `imutils` ([Repo here](https://github.com/jrosebr1/imutils))
-  ```
+  ```bash
   pip install imutils
   ```
   
 - rviz ([Wiki here](http://wiki.ros.org/rviz))
-  ```
+  ```bash
   sudo apt-get install ros-kinetic-visualization
   ```
   
 - ar_track_alvar ([Wiki here](http://wiki.ros.org/ar_track_alvar))
-  ```
+  ```bash
   sudo apt-get install ros-kinetic-ar-track-alvar
   ```
 - usb_cam ([Wiki here](http://wiki.ros.org/usb_cam))
-  ```
+  ```bash
   sudo apt-get -install ros-kinetic-usb-cam
+  ```
+- v4l-utils
+  ```bash
+  sudo apt-get install v4l-utils
   ```
 ## 3. Execution
 
@@ -173,15 +177,22 @@ For this competition, we want the robot to follow a pre-defined course and do di
 
 4. Power up the kobuki base and put it on the start position. <strong>Make sure the robot is facing starting forward. </strong> 
 
-5. Start the library
+5. Find the device file for the USB camera. This can be done with the **v4l2-ctl** utility from the **v4l-utils** package 
+   using the following command:
 
    ```bash
-   roslaunch comp5 comp5.launch
+   v4l2-ctl --list-devices
+   ```
+
+6. Start the library with the following command changing the USB camera's device file name as necessary (**/dev/video1** in the following example):
+
+   ```bash
+   roslaunch comp5 comp5.launch video_device:=/dev/video1
    ```
    
-6. View the image from usb_cam to make sure that the the white lines are at the center of the image. (e.g. You could use rqt for this task) 
+7. View the image from usb_cam to make sure that the the white lines are at the center of the image. (e.g. You could use rqt for this task) 
 
-6. Start the turtlebot by pressing A on the controller
+8. Start the turtlebot by pressing A on the controller
 
 
 ## 4. Concepts & Code
