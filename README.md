@@ -10,11 +10,11 @@ For this competition, we want the robot to follow a pre-defined course and do di
 
 - The course map in simulation:
 
-    <img src="https://github.com/CMPUT412W19Team6/Comp3/blob/master/course.PNG" width="400">
+    <img src="https://github.com/CMPUT412W19Team6/Comp5/blob/master/course.PNG" width="400">
 
 - The actual course's picture:
 
-    <img src="https://github.com/CMPUT412W19Team6/Comp3/blob/master/course_real.jpg" width="200">
+    <img src="https://github.com/CMPUT412W19Team6/Comp5/blob/master/course_real.jpg" width="200">
 <!-- ![pick link](https://github.com/CMPUT412W19Team6/Competition2/blob/master/course_pic.png?s=200) -->
 
 - Explanation:
@@ -49,7 +49,7 @@ For this competition, we want the robot to follow a pre-defined course and do di
            
         * Find the goal position marked by an AR tag and signal a sound and a green LED light
         	
-            <img src="https://github.com/CMPUT412W19Team6/Comp3/blob/master/ar.jpg" width="200" title="AR tag">
+            <img src="https://github.com/CMPUT412W19Team6/comp5/blob/master/ar.jpg" width="200" title="AR tag">
            
         * Find AR tag wrapped box and signal a sound and red LED light.
         
@@ -57,7 +57,7 @@ For this competition, we want the robot to follow a pre-defined course and do di
         
         * Find and Park at the spot that has the object with the same shape as the green shape from Location 2, signal sound and orange LED light when found and signal sound, origin and green LED lights when parked.
 			
-            <img src="https://github.com/CMPUT412W19Team6/Comp3/blob/master/object.jpg" width="200" title="shape">
+            <img src="https://github.com/CMPUT412W19Team6/comp5/blob/master/object.jpg" width="200" title="shape">
         
         * Push the Box into the goal spot identified by the AR marker
         
@@ -176,7 +176,7 @@ For this competition, we want the robot to follow a pre-defined course and do di
 5. Start the library
 
    ```bash
-   roslaunch comp3 comp3.launch
+   roslaunch comp5 comp5.launch
    ```
    
 6. View the image from usb_cam to make sure that the the white lines are at the center of the image. (e.g. You could use rqt for this task) 
@@ -195,18 +195,18 @@ state machine:
     
       > Note2: The waite state is the starting state. When `button A` is pressed, it will enter Phase 1. And if `button B` is pressed during any phase, it will return to wait state.
   
-    ![statemachine](https://github.com/CMPUT412W19Team6/Comp3/blob/master/general.PNG?s=200)
+    ![statemachine](https://github.com/CMPUT412W19Team6/Comp5/blob/master/general.PNG?s=200)
    
 
     
     
    * Phase1:
    
-     ![statemachine](https://github.com/CMPUT412W19Team6/Comp3/blob/master/phase1.PNG?s=200)
+     ![statemachine](https://github.com/CMPUT412W19Team6/Comp5/blob/master/phase1.PNG?s=200)
    
    * Phase2:
    
-     ![statemachine](https://github.com/CMPUT412W19Team6/Comp3/blob/master/phase2.PNG?s=200)
+     ![statemachine](https://github.com/CMPUT412W19Team6/Comp5/blob/master/phase2.PNG?s=200)
    
    * Phase4:
      > Note1: This phase is really long, and is generated based on an `orderedDictionary`, whose values are lists of "moving actions"
@@ -214,11 +214,11 @@ state machine:
      
      > Note2: The last item in the `orderedDictionary` is to move robot to the exit of the parking area, i.e. the off ramp at the end
    
-     ![statemachine](https://github.com/CMPUT412W19Team6/Comp3/blob/master/Phase4.PNG?s=200)
+     ![statemachine](https://github.com/CMPUT412W19Team6/Comp5/blob/master/Phase4.PNG?s=200)
    
    * Phase3:
    
-     ![statemachine](https://github.com/CMPUT412W19Team6/Comp3/blob/master/phase3.PNG?s=200)
+     ![statemachine](https://github.com/CMPUT412W19Team6/Comp5/blob/master/phase3.PNG?s=200)
    
 
 ### Counting objects
